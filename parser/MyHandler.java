@@ -1,4 +1,4 @@
-package leertaak2;
+package leertaak3;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
