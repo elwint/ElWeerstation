@@ -1,4 +1,4 @@
-# Rolluik domotica
+# ELWeerstation
 
 ***This is a school project.***
 
