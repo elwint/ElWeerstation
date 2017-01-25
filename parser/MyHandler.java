@@ -1,4 +1,4 @@
-package leertaak3;
+package leertaak2;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -79,7 +79,10 @@ public class MyHandler extends DefaultHandler{
     
     @Override
     public void characters(char[] ch, int start, int length){
-         if(bDATE){
+        if(bSTN) {
+            System.out.println("Station: "+ new String (ch, start, length));
+            bSTN = false;
+        }else if(bDATE){
             System.out.println("Date: "+ new String(ch, start, length));
             bDATE = false;
         }else if(bTIME){
