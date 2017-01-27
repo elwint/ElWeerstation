@@ -21,7 +21,7 @@ public class XMLParser {
 
 				//TODO: THREAD (nu max 1 client)
 				DataHandler c = new DataHandler(client);
-				c.run();
+				c.start();
 
 			} catch(IOException e) {
 				System.out.println("Client connection error" + ", " + e);

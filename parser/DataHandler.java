@@ -31,13 +31,13 @@ class DataHandler {
 		System.out.println("CONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 	}
 
-	void run() throws IOException {
-		getData();
+	void start() throws IOException {
+		run();
 		this.client.close();
 		System.out.println("DISCONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 	}
 
-	private void getData() throws IOException  {
+	private void run() throws IOException  {
 		String ln;
 		String value;
 		boolean read = false;
@@ -46,6 +46,7 @@ class DataHandler {
 			String key = ln.substring(ln.indexOf("<") + 1, ln.indexOf(">"));
 			if (key.equals("MEASUREMENT")) {
 				read = true;
+				continue;
 			}
 
 			if (!read) {
@@ -88,6 +89,7 @@ class DataHandler {
 			try {
 				value = ln.substring(ln.indexOf(">") + 1, ln.indexOf("<", ln.indexOf(">")));
 			} catch (IndexOutOfBoundsException e) {
+				System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Not a value: " + ln);
 				continue;
 			}
 			if (value.trim().isEmpty()) {
