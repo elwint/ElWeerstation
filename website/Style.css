@@ -1,0 +1,33 @@
+
+h1 {
+    font-family: "Serif";
+    font-size: 60px;
+    position: relative;
+}
+
+p{
+    font-family: "Serif";
+}
+ul{
+    list-style: none;
+    font-size: 30px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: black;
+}
+
+li{
+    float: left;
+}
+
+li a{
+    display: inline;
+    text-decoration: none;
+    border-right: solid 1px white;
+    border-left: solid 1px white;
+    text-align: center;
+    font-family: "Serif";
+    color: white;
+    padding: 10px 10px;
+}
