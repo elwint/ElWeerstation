@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -11,6 +14,7 @@ import java.util.Locale;
 class DataHandler {
 	private Socket client;
 	private BufferedReader reader;
+	private Connection db;
 	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 	private DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH);
 	private Integer stationID = null;
@@ -24,10 +28,14 @@ class DataHandler {
 	private Float windSpeed = null;
 	private Float rain = null;
 	private Float snow = null;
+	private Integer events = null; // binair
+	private Float cloudAmount = null;
+	private Integer windDirection = null;
 
-	DataHandler(Socket client) throws IOException {
+	DataHandler(Socket client, Connection con) throws IOException {
 		this.client = client;
 		this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		this.db = con;
 		System.out.println("CONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 	}
 
@@ -39,17 +47,21 @@ class DataHandler {
 
 	private void run() throws IOException  {
 		String ln;
+		String key;
 		String value;
 		boolean read = false;
 
 		while ((ln = this.reader.readLine()) != null) {
-			String key = ln.substring(ln.indexOf("<") + 1, ln.indexOf(">"));
-			if (key.equals("MEASUREMENT")) {
-				read = true;
+			try {
+				key = ln.substring(ln.indexOf("<") + 1, ln.indexOf(">"));
+			} catch (IndexOutOfBoundsException e) {
 				continue;
 			}
 
-			if (!read) {
+			if (key.equals("MEASUREMENT")) {
+				read = true;
+				continue;
+			} else if (key.trim().isEmpty() || !read) {
 				continue;
 			}
 
@@ -69,6 +81,13 @@ class DataHandler {
 					System.out.println(windSpeed);
 					System.out.println(rain);
 					System.out.println(snow);
+					if (events != null) {
+						System.out.println(Integer.toBinaryString(events));
+					} else {
+						System.out.println("null");
+					}
+					System.out.println(cloudAmount);
+					System.out.println(windDirection);
 				}
 				read = false;
 
@@ -83,15 +102,18 @@ class DataHandler {
 				windSpeed = null;
 				rain = null;
 				snow = null;
+				events = null;
+				cloudAmount = null;
+				windDirection = null;
 				continue;
 			}
 
 			try {
 				value = ln.substring(ln.indexOf(">") + 1, ln.indexOf("<", ln.indexOf(">")));
 			} catch (IndexOutOfBoundsException e) {
-				System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Not a value: " + ln);
 				continue;
 			}
+
 			if (value.trim().isEmpty()) {
 				continue;
 			}
@@ -131,11 +153,39 @@ class DataHandler {
 					case "SNDP":
 						snow = Float.parseFloat(value);
 						break;
+					case "FRSHTT":
+						events = Integer.parseInt(value, 2);
+						break;
+					case "CLDC":
+						cloudAmount = Float.parseFloat(value);
+						break;
+					case "WNDDIR":
+						windDirection = Integer.parseInt(value);
+						break;
 					default:
+						System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Unknown key: " + key);
 						break;
 				}
 			} catch (DateTimeParseException | NumberFormatException e) {
 				System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Received invalid value: " + value);
+			}
+		}
+	}
+
+	private void query(String sql) {
+		Statement stmt = null;
+		try {
+			stmt = this.db.createStatement();
+			stmt.executeUpdate(sql);
+		} catch (SQLException e ) {
+			System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] SQL Error, " + e);
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
