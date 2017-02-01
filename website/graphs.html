@@ -6,6 +6,33 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Equipo Bajo</title>
 	<link rel="stylesheet" href="main.css" type="text/css" />
+	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	<script type="text/javascript">
+
+        window.onload = function () {
+            var chart = new CanvasJS.Chart("chartContainer", {
+                theme: "theme1",//theme1
+                title:{
+                    text: "Weather data"
+                },
+				axisY: {
+                    suffix:"°C"
+				},
+                animationEnabled: false,
+                data: [
+                    {
+                        // Change type to "bar", "area", "spline", "pie",etc.
+                        type: "spline",
+                        dataPoints: [
+                            { label: "Monday",  y: 27  },
+
+                        ]
+                    }
+                ]
+            });
+            chart.render();
+        }
+	</script>
 </head>
 <body>
 <div id="wrapper">
@@ -20,6 +47,23 @@
 		<div id="graphs">
 
 		</div>
+	</div>
+	<div id="chartContainer" style="height: 300px; width: 100%;">
+
+	</div>
+	<div id="ChartSelector">
+		<ul>
+			<li><a href="/">Temperature</a></li>
+			<li><a href="/">Dew Point</a></li>
+			<li><a href="/">Air Pressure</a></li>
+			<li><a href="/">Visibility</a></li>
+			<li><a href="/">Rainfall</a></li>
+			<li><a href="/">Snow Depth</a></li>
+			<li><a href="/">Cloudiness</a></li>
+			<li><a href="/">Wind force</a></li>
+			<li><a href="/">Wind direction</a></li>
+			<li><a href="/">Incidents</a></li>
+		</ul>
 	</div>
 </div>
 </body>
