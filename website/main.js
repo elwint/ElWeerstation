@@ -50,3 +50,13 @@ var temperatureChart = new Chart(tempChart, {
 	document.getElementById(page).style.display = "block";
 	}
 	}
+	
+	function updateGraph(){
+		tempData.splice(0,1);
+		tempData.push((Math.random()*25)+1);
+		temperatureChart.update();
+	}
+	
+	var myInterval = setInterval(updateGraph, 1000);
+	
+	

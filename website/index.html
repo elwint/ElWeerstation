@@ -32,6 +32,9 @@
 	
 	<div id="Temperature" class="tabcontent">
 		<canvas id="temperatureChart" height="290px" width="1000px" style="border: solid;"></canvas>
+		<p>
+			<button onclick="clearInterval(myInterval)">Pause Graph</button>
+			<button onclick="myInterval = setInterval(updateGraph, 1000)">Start Graph</button>
 	</div>
 	
 	<!-- TODO -->
