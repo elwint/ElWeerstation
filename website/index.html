@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="author" content="Je boys Friedrik en Kishan">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Equipo Bajo</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="main.css" type="text/css" />
 </head>
+
 <body>
 <div id="wrapper">
 	<div id="navbar">
-		<ul>
-			<li><a href="index.html">Home</a></li>
-			<li><a href="graphs.html">Graphs</a></li>
-			<li><a href="help.html">Help</a></li>
+		<ul class"tab">
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Home')" id="defaultOpen">Home</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Temperature')">Temperature</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('DewPoint')">Dew point</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('AirPressure')">Air Pressure</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Visibility')">Visibility</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Rainfall')">Rainfall</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('SnowDepth')">Snow Depth</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Cloudiness')">Cloudiness</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindForce')">Wind force</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindDirection')">Wind direction</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Incidents')">Incidents</a></li>
 		</ul>
 	</div>
-	<div id="content">
-		<div id="home">
-			<h1>Equipo Bajo</h1>
-			<p>Welcome to our website!</p>
-			<p>For weather data, press the Graphs button, for further assistance, refer to our help page.</p>
-		</div>
+	
+	<div id="Home" class="tabcontent">
+		<h2>Home</h2>
+		<p>This is the homepage!</p>
 	</div>
+	
+	<div id="Temperature" class="tabcontent">
+		<canvas id="temperatureChart" height="290px" width="1000px" style="border: solid;"></canvas>
+	</div>
+	
+	<!-- TODO -->
+	<div id="DewPoint" class="tabcontent"></div>
+	<div id="AirPressure" class="tabcontent"></div>
+	<div id="Visibility" class="tabcontent"></div>
+	<div id="Rainfall" class="tabcontent"></div>
+	<div id="SnowDepth" class="tabcontent"></div>
+	<div id="Cloudiness" class="tabcontent"></div>
+	<div id="WindForce" class="tabcontent"></div>
+	<div id="WindDirection" class="tabcontent"></div>
+	<div id="Incidents" class="tabcontent"></div>
+	<!-- TODO -->
+	
 </div>
+	<script src="Chart.bundle.js"></script>
+	<script src="main.js"></script>
 </body>
 </html>
