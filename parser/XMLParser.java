@@ -52,8 +52,8 @@ public class XMLParser {
 					System.out.println("Active threads: " + Integer.toString(java.lang.Thread.activeCount()));
 					Thread.sleep(1000);
 				}
-			} catch(InterruptedException v) {
-				System.out.println(v);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		});
 		debug.start();
@@ -61,8 +61,7 @@ public class XMLParser {
 		while (true) {
 			try {
 				Socket client = serverSocket.accept();
-				Thread c = new DataHandler(client, con, sql);
-				c.start();
+				new Thread(new DataHandler(client, con, sql)).start();
 			} catch(IOException | SQLException e) {
 				System.out.println("Client connection error" + ", " + e);
 			}

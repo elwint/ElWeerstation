@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
-class DataHandler extends Thread {
+class DataHandler implements Runnable {
 	private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
 	private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH);
 	private Socket client;
@@ -212,8 +212,6 @@ class DataHandler extends Thread {
 				pst.setNull(13, Types.FLOAT);
 			pst.setQueryTimeout(1);
 			pst.executeUpdate();
-		} catch (SQLTimeoutException e) {
-			System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] SQL Error, query execution is taking too long (timeout = 1 second)" );
 		} catch (SQLException e ) {
 			System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] SQL Error, " + e);
 		}
