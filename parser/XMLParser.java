@@ -7,32 +7,20 @@ import java.sql.SQLException;
 
 public class XMLParser {
 	public static void main(String[] args) {
-		Connection con = null;
 		String dbHost = "127.0.0.1";
 		String dbPort = "5432";
 		String dbDatabase = "school";
 		String dbUser = "postgres";
 		String dbPass = "";
+		String sql = "INSERT INTO Measurement VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		int serverPort = 7789;
 
 		try {
 			Class.forName("org.postgresql.Driver");
-			con = DriverManager.getConnection("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase, dbUser, dbPass);
 		} catch (ClassNotFoundException e) {
 			System.out.println("Cannot find PostgreSQL JDBC Driver");
 			System.exit(1);
-		} catch (SQLException e) {
-			System.out.println("Database server connection failed, " + e);
-			System.exit(1);
 		}
-
-		if (con != null) {
-			System.out.println("Connected successfully to database server");
-		} else {
-			System.out.println("Database server connection failed");
-			System.exit(1);
-		}
-
 
 		ServerSocket serverSocket = null;
 		try {
@@ -43,15 +31,38 @@ public class XMLParser {
 			System.exit(1);
 		}
 
+		//TODO: Connection pool
+		Connection con = null;
+		try {
+			con = DriverManager.getConnection("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase, dbUser, dbPass);
+			if (con != null) {
+				System.out.println("Connected successfully to database server");
+			} else {
+				System.out.println("Database server connection failed");
+				System.exit(1);
+			}
+		} catch (SQLException e) {
+			System.out.println("Database server connection failed, " + e);
+			System.exit(1);
+		}
+
+		Thread debug = new Thread(() -> {
+			try {
+				while (true) {
+					System.out.println("Active threads: " + Integer.toString(java.lang.Thread.activeCount()));
+					Thread.sleep(1000);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
+		debug.start();
+
 		while (true) {
 			try {
 				Socket client = serverSocket.accept();
-
-				//TODO: THREAD (nu max 1 client)
-				DataHandler c = new DataHandler(client, con);
-				c.start();
-
-			} catch(IOException e) {
+				new Thread(new DataHandler(client, con, sql)).start();
+			} catch(IOException | SQLException e) {
 				System.out.println("Client connection error" + ", " + e);
 			}
 		}

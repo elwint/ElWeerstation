@@ -2,21 +2,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.sql.Statement;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
-class DataHandler {
+class DataHandler implements Runnable {
+	private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+	private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH);
 	private Socket client;
 	private BufferedReader reader;
-	private Connection db;
-	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
-	private DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH);
+	private PreparedStatement pst;
 	private Integer stationID = null;
 	private LocalDate date = null;
 	private LocalTime time = null;
@@ -28,24 +27,30 @@ class DataHandler {
 	private Float windSpeed = null;
 	private Float rain = null;
 	private Float snow = null;
-	private Integer events = null; // binair
+	private Integer events = null; // Binary
 	private Float cloudAmount = null;
 	private Integer windDirection = null;
 
-	DataHandler(Socket client, Connection con) throws IOException {
+	DataHandler(Socket client, Connection con, String sql) throws IOException, SQLException {
 		this.client = client;
 		this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		this.db = con;
+		this.pst = con.prepareStatement(sql);
 		System.out.println("CONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 	}
 
-	void start() throws IOException {
-		run();
-		this.client.close();
-		System.out.println("DISCONNECTED: " + client.getInetAddress() + ":" + client.getPort());
+	public void run() {
+		try {
+			read();
+			this.client.close();
+			this.pst.close();
+		} catch (IOException | SQLException e) {
+			System.out.println("Client connection error" + ", " + e);
+		} finally {
+			System.out.println("DISCONNECTED: " + client.getInetAddress() + ":" + client.getPort());
+		}
 	}
 
-	private void run() throws IOException  {
+	private void read() throws IOException  {
 		String ln;
 		String key;
 		String value;
@@ -69,25 +74,10 @@ class DataHandler {
 				if (stationID == null || date == null || time == null) {
 					System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Missing required data, drop measurement");
 				} else {
-					System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Successfully received data for station: " + Integer.toString(stationID));
-					//TODO: SQL Magic?
-					System.out.println(date);
-					System.out.println(time);
-					System.out.println(temperature);
-					System.out.println(dewPoint);
-					System.out.println(airPressureStation);
-					System.out.println(airPressureSeaLevel);
-					System.out.println(visibility);
-					System.out.println(windSpeed);
-					System.out.println(rain);
-					System.out.println(snow);
-					if (events != null) {
-						System.out.println(Integer.toBinaryString(events));
-					} else {
-						System.out.println("null");
-					}
-					System.out.println(cloudAmount);
-					System.out.println(windDirection);
+					// System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Successfully received data for station: " + Integer.toString(stationID));
+
+					// Comment sendData om geen data te verzenden naar de database
+					sendData(stationID, Timestamp.valueOf(LocalDateTime.of(date, time)), temperature, dewPoint, airPressureStation, airPressureSeaLevel, visibility, windSpeed, rain, snow, events, cloudAmount, windDirection);
 				}
 				read = false;
 
@@ -172,21 +162,58 @@ class DataHandler {
 		}
 	}
 
-	private void query(String sql) {
-		Statement stmt = null;
+	private void sendData(Integer stationID, Timestamp timestamp, Float temperature, Float dewPoint, Float airPressureStation, Float airPressureSeaLevel, Float visibility, Float windSpeed, Float rain, Float snow, Integer events, Float cloudAmount, Integer windDirection) {
 		try {
-			stmt = this.db.createStatement();
-			stmt.executeUpdate(sql);
+			pst.setInt(1, stationID);
+			pst.setTimestamp(2, timestamp);
+			if (temperature != null)
+				pst.setFloat(3, temperature);
+			else
+				pst.setNull(3, Types.FLOAT);
+			if (dewPoint != null)
+				pst.setFloat(4, dewPoint);
+			else
+				pst.setNull(4, Types.FLOAT);
+			if (airPressureStation != null)
+				pst.setFloat(5, airPressureStation);
+			else
+				pst.setNull(5, Types.FLOAT);
+			if (airPressureSeaLevel != null)
+				pst.setFloat(6, airPressureSeaLevel);
+			else
+				pst.setNull(6, Types.FLOAT);
+			if (rain != null)
+				pst.setFloat(7, rain);
+			else
+				pst.setNull(7, Types.FLOAT);
+			if (snow != null)
+				pst.setFloat(8, snow);
+			else
+				pst.setNull(8, Types.FLOAT);
+			if (cloudAmount != null)
+				pst.setFloat(9, cloudAmount);
+			else
+				pst.setNull(9, Types.FLOAT);
+			if (visibility != null)
+				pst.setFloat(10, visibility);
+			else
+				pst.setNull(10, Types.FLOAT);
+			if (events != null)
+				pst.setInt(11, events);
+			else
+				pst.setNull(11, Types.INTEGER);
+			if (windDirection != null)
+				pst.setInt(12, windDirection);
+			else
+				pst.setNull(12, Types.INTEGER);
+			if (windSpeed != null)
+				pst.setFloat(13, windSpeed);
+			else
+				pst.setNull(13, Types.FLOAT);
+			pst.setQueryTimeout(1);
+			pst.executeUpdate();
 		} catch (SQLException e ) {
 			System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] SQL Error, " + e);
-		} finally {
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 }
