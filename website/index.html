@@ -11,7 +11,7 @@
 <div id="wrapper">
 	<div id="navbar">
 		<ul class"tab">
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Home')" id="defaultOpen">Home</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Dashboard')" id="defaultOpen">Dashboard</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Temperature')">Temperature</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('DewPoint')">Dew point</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('AirPressure')">Air Pressure</a></li>
@@ -25,16 +25,23 @@
 		</ul>
 	</div>
 	
-	<div id="Home" class="tabcontent">
-		<h2>Home</h2>
-		<p>This is the homepage!</p>
+	<div id="Dashboard" class="tabcontent">
+			<div id="content">
+				<h2>Dashboard</h2>
+				<div style="width:49%; display: inline-block">
+					<h3>Real-time wind-force</h3>
+					<canvas id="windForceChart"></canvas>
+				</div>
+				<div style="float:right; width:49%; display: inline-block">
+					<h3>Highest peak rain</h3>
+					<canvas id="highestPeakChart"></canvas>
+				</div>
+			</div>
 	</div>
 	
 	<div id="Temperature" class="tabcontent">
-		<canvas id="temperatureChart" height="290px" width="1000px" style="border: solid;"></canvas>
-		<p>
-			<button onclick="clearInterval(myInterval)">Pause Graph</button>
-			<button onclick="myInterval = setInterval(updateGraph, 1000)">Start Graph</button>
+			<h2>Temperature</h2>
+			<canvas id="temperatureChart" height="290px" width="1000px"></canvas>
 	</div>
 	
 	<!-- TODO -->
