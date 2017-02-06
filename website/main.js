@@ -142,7 +142,7 @@ function updateWindForceGraph(elem) {
 	}
 	windForceData.push(elem.value);
 	windForceLabels.push(formatDate(new Date(elem.time*1000)));
-	lastTime = elem.time;
+	lastTime = elem.time*1000;
 	windForceChart.update();
 	totalItems++;
 }
