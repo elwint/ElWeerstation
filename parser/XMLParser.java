@@ -1,19 +1,48 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.Properties;
+import java.util.concurrent.*;
 
 public class XMLParser {
+	static final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
+
 	public static void main(String[] args) {
-		String dbHost = "127.0.0.1";
-		String dbPort = "5432";
-		String dbDatabase = "school";
-		String dbUser = "postgres";
-		String dbPass = "";
-		String sql = "INSERT INTO Measurement VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		int serverPort = 7789;
+		int serverPort = 0;
+		String dbHost = null;
+		String dbPort = null;
+		String dbName = null;
+		String dbUser = null;
+		String dbPass = null;
+		final String sql = "INSERT INTO Measurement VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		InputStream file = XMLParser.class.getResourceAsStream("config.properties");
+		if (file != null) {
+			try {
+				Properties conf = new Properties();
+				conf.load(file);
+				serverPort = Integer.parseInt(conf.getProperty("SERVER_PORT"));
+				dbHost = conf.getProperty("DB_HOST");
+				dbPort = conf.getProperty("DB_PORT");
+				dbName = conf.getProperty("DB_NAME");
+				dbUser = conf.getProperty("DB_USER");
+				dbPass = conf.getProperty("DB_PASS");
+			} catch (Exception e) {
+				System.out.println("Can't load config file config.properties, " + e);
+			} finally {
+				try {
+					file.close();
+				} catch (IOException e) {
+					System.out.println("Can't load config file config.properties, " + e);
+				}
+			}
+		} else {
+			System.out.println("Can't find config file config.properties");
+			System.exit(1);
+		}
 
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -31,38 +60,19 @@ public class XMLParser {
 			System.exit(1);
 		}
 
-		//TODO: Connection pool
-		Connection con = null;
-		try {
-			con = DriverManager.getConnection("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase, dbUser, dbPass);
-			if (con != null) {
-				System.out.println("Connected successfully to database server");
-			} else {
-				System.out.println("Database server connection failed");
-				System.exit(1);
-			}
-		} catch (SQLException e) {
-			System.out.println("Database server connection failed, " + e);
-			System.exit(1);
-		}
-
-		Thread debug = new Thread(() -> {
-			try {
-				while (true) {
-					System.out.println("Active threads: " + Integer.toString(java.lang.Thread.activeCount()));
-					Thread.sleep(1000);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
-		debug.start();
+		//TODO: Meerdere database connecties? (if necessary)
+		DatabaseHandler db_handler = new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql);
+		new Thread(db_handler).start();
+		new Thread(new Stats()).start();
 
 		while (true) {
 			try {
-				Socket client = serverSocket.accept();
-				new Thread(new DataHandler(client, con, sql)).start();
-			} catch(IOException | SQLException e) {
+				Socket clientSocket = serverSocket.accept();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				// System.out.println("CONNECTED: " + client.getInetAddress() + ":" + client.getPort());
+				Stats.inc_clients();
+				clientProcessingPool.submit(new DataHandler(clientSocket, reader, db_handler));
+			} catch(IOException e) {
 				System.out.println("Client connection error" + ", " + e);
 			}
 		}
