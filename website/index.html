@@ -16,12 +16,11 @@
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('DewPoint')">Dew point</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('AirPressure')">Air Pressure</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Visibility')">Visibility</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Rainfall')">Rainfall</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('RainFall')">Rain Fall</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('SnowDepth')">Snow Depth</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Cloudiness')">Cloudiness</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindForce')">Wind force</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindForce')">Windforce</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindDirection')">Wind direction</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Incidents')">Incidents</a></li>
 		</ul>
 	</div>
 	
@@ -40,21 +39,67 @@
 	</div>
 	
 	<div id="Temperature" class="tabcontent">
+		<div id="content">
 			<h2>Temperature</h2>
 			<canvas id="temperatureChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+
+	<div id="DewPoint" class="tabcontent">
+		<div id="content">
+			<h2>Dew Point</h2>
+			<canvas id="dewPointChart" height="290px" width="1000px"></canvas>
+		</div>
 	</div>
 	
-	<!-- TODO -->
-	<div id="DewPoint" class="tabcontent"></div>
-	<div id="AirPressure" class="tabcontent"></div>
-	<div id="Visibility" class="tabcontent"></div>
-	<div id="Rainfall" class="tabcontent"></div>
-	<div id="SnowDepth" class="tabcontent"></div>
-	<div id="Cloudiness" class="tabcontent"></div>
-	<div id="WindForce" class="tabcontent"></div>
-	<div id="WindDirection" class="tabcontent"></div>
-	<div id="Incidents" class="tabcontent"></div>
-	<!-- TODO -->
+	<div id="AirPressure" class="tabcontent">
+		<div id="content">
+			<h2>Air Pressure</h2>
+			<canvas id="airPressureChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="Visibility" class="tabcontent">
+		<div id="content">
+			<h2>Visibility</h2>
+			<canvas id="visibilityChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="RainFall" class="tabcontent">
+		<div id="content">
+			<h2>Rain Fall</h2>
+			<canvas id="rainFallChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="SnowDepth" class="tabcontent">
+		<div id="content">
+			<h2>Snow Depth</h2>
+			<canvas id="snowDepthChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="Cloudiness" class="tabcontent">
+		<div id="content">
+			<h2>Cloudiness</h2>
+			<canvas id="cloudinessChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="WindForce" class="tabcontent">
+		<div id="content">
+			<h2>Wind Force</h2>
+			<canvas id="windForceChart2" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
+	
+	<div id="WindDirection" class="tabcontent">
+		<div id="content">
+			<h2>Wind Direction</h2>
+			<canvas id="windDirectionChart" height="290px" width="1000px"></canvas>
+		</div>
+	</div>
 	
 </div>
 	<script src="Chart.bundle.js"></script>
