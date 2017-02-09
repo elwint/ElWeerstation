@@ -14,14 +14,22 @@
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Dashboard')" id="defaultOpen">Dashboard</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Temperature')">Temperature</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('DewPoint')">Dew point</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('AirPressure')">Air Pressure</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('AirPressure')">Air pressure</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Visibility')">Visibility</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('RainFall')">Rain Fall</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('SnowDepth')">Snow Depth</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('RainFall')">Rain fall</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('SnowDepth')">Snow depth</a></li>
 			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('Cloudiness')">Cloudiness</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindForce')">Windforce</a></li>
-			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindDirection')">Wind direction</a></li>
+			<li><a href="javascript:void(0)" class="tablinks" onclick="loadPage('WindSpeed')">Wind speed</a></li>
 		</ul>
+	</div>
+
+	<div id="filters">
+		<select id="country_filter">
+			<option>Country</option>
+		</select>
+		<select id="station_filter">
+			<option>Station</option>
+		</select>
 	</div>
 	
 	<div id="Dashboard" class="tabcontent">
@@ -87,20 +95,12 @@
 		</div>
 	</div>
 	
-	<div id="WindForce" class="tabcontent">
+	<div id="WindSpeed" class="tabcontent">
 		<div id="content">
 			<h2>Wind Force</h2>
-			<canvas id="windForceChart2" height="290px" width="1000px"></canvas>
+			<canvas id="windSpeedChart" height="290px" width="1000px"></canvas>
 		</div>
-	</div>
-	
-	<div id="WindDirection" class="tabcontent">
-		<div id="content">
-			<h2>Wind Direction</h2>
-			<canvas id="windDirectionChart" height="290px" width="1000px"></canvas>
-		</div>
-	</div>
-	
+	</div>	
 </div>
 	<script src="Chart.bundle.js"></script>
 	<script src="main.js"></script>
