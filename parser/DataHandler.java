@@ -1,38 +1,47 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import java.sql.*;
+import java.sql.Timestamp;
 
 class DataHandler implements Runnable {
 	private final Socket client;
-	private final BufferedReader reader;
 	private final DatabaseHandler db_handler;
-	private boolean disconnected = false;
-	private Integer stationID = null;
-	private String date = null;
-	private String time = null;
-	private Timestamp timestamp = null;
-	private Float temperature = null;
-	private Float dewPoint = null;
-	private Float airPressureStation = null;
-	private Float airPressureSeaLevel = null;
-	private Float visibility = null;
-	private Float windSpeed = null;
-	private Float rain = null;
-	private Float snow = null;
-	private Integer events = null; // Binary
-	private Float cloudAmount = null;
-	private Integer windDirection = null;
+	private BufferedReader reader = null;
 
-	DataHandler(Socket client, BufferedReader reader, DatabaseHandler db_handler) {
+	private boolean disconnected = false;
+	private String ln;
+	private String key;
+	private String value;
+	private boolean read = false;
+
+	private int stationID;
+	private char[] date = new char[10];
+	private char[] time = new char[8];
+	private Timestamp timestamp;
+	private float temperature;
+	private float dewPoint;
+	private float airPressureStation;
+	private float airPressureSeaLevel;
+	private float visibility;
+	private float windSpeed;
+	private float rain;
+	private float snow;
+	private int events; // Binary
+	private float cloudAmount;
+	private int windDirection;
+
+	DataHandler(Socket client, DatabaseHandler db_handler) throws IOException {
 		this.client = client;
-		this.reader = reader;
 		this.db_handler = db_handler;
 	}
 
 	public void run() {
 		try {
-			read(this.reader);
+			if (this.reader == null) {
+				this.reader = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
+			}
+			read();
 			if (this.disconnected) {
 				// System.out.println("DISCONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 				Stats.dec_cients();
@@ -45,12 +54,7 @@ class DataHandler implements Runnable {
 		}
 	}
 
-	private void read(BufferedReader reader) throws IOException  {
-		String ln;
-		String key;
-		String value;
-		boolean read = false;
-
+	private void read() throws IOException {
 		while (true) {
 			ln = reader.readLine();
 			if (ln == null) {
@@ -58,7 +62,6 @@ class DataHandler implements Runnable {
 				return;
 			}
 
-			// System.out.println(ln);
 			try {
 				key = ln.substring(ln.indexOf("<") + 1, ln.indexOf(">"));
 			} catch (IndexOutOfBoundsException e) {
@@ -77,8 +80,8 @@ class DataHandler implements Runnable {
 			}
 
 			if (key.equals("/MEASUREMENT")) {
-				if (stationID == null || timestamp == null) {
-					System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Missing required data, drop measurement");
+				if (stationID == -10000 || timestamp == null) {
+					System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Missing required data, dropping measurement");
 				} else {
 					// System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Successfully received data for station: " + Integer.toString(stationID));
 					Stats.inc_measurements();
@@ -86,21 +89,21 @@ class DataHandler implements Runnable {
 				}
 				read = false;
 
-				stationID = null;
-				date = null;
-				time = null;
+				stationID = -10000;
+				date[0] = 0;
+				time[0] = 0;
 				timestamp = null;
-				temperature = null;
-				dewPoint = null;
-				airPressureStation = null;
-				airPressureSeaLevel = null;
-				visibility = null;
-				windSpeed = null;
-				rain = null;
-				snow = null;
-				events = null;
-				cloudAmount = null;
-				windDirection = null;
+				temperature = -10000;
+				dewPoint = -10000;
+				airPressureStation = -10000;
+				airPressureSeaLevel = -10000;
+				visibility = -10000;
+				windSpeed = -10000;
+				rain = -10000;
+				snow = -10000;
+				events = -10000;
+				cloudAmount = -10000;
+				windDirection = -10000;
 				continue;
 			}
 
@@ -120,14 +123,16 @@ class DataHandler implements Runnable {
 						stationID = Integer.parseInt(value);
 						break;
 					case "DATE":
-						if (time != null)
-							timestamp = Timestamp.valueOf(value + " " + time);
-						date = value;
+						if (time[0] != 0)
+							timestamp = Timestamp.valueOf(String.valueOf(value) + " " + String.valueOf(time));
+						else
+							date = value.toCharArray();
 						break;
 					case "TIME":
-						if (date != null)
-							timestamp = Timestamp.valueOf(date + " " + value);
-						time = value;
+						if (date[0] != 0) {
+							timestamp = Timestamp.valueOf(String.valueOf(date) + " " + String.valueOf(value));
+						} else
+							time = value.toCharArray();
 						break;
 					case "TEMP":
 						temperature = Float.parseFloat(value);

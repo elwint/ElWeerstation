@@ -9,15 +9,14 @@ public class DatabaseHandler implements Runnable {
 			Connection con  = DriverManager.getConnection("jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase, dbUser, dbPass);
 			if (con != null) {
 				pst = con.prepareStatement(sql);
-				// pst.setQueryTimeout(1);
 				con.setAutoCommit(false);
 				System.out.println("Connected successfully to database server");
 			} else {
-				System.out.println("Database server connection failed");
+				System.out.println("Database server connection failed, (jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase + ")");
 				System.exit(1);
 			}
 		} catch (SQLException e) {
-			System.out.println("Database server connection failed, " + e);
+			System.out.println("Database server connection failed (jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbDatabase + "), " + e);
 			System.exit(1);
 		}
 	}
@@ -25,7 +24,7 @@ public class DatabaseHandler implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -46,51 +45,51 @@ public class DatabaseHandler implements Runnable {
 		}
 	}
 
-	synchronized void prepareData(Integer stationID, Timestamp timestamp, Float temperature, Float dewPoint, Float airPressureStation, Float airPressureSeaLevel, Float visibility, Float windSpeed, Float rain, Float snow, Integer events, Float cloudAmount, Integer windDirection) {
+	synchronized void prepareData(int stationID, Timestamp timestamp, float temperature, float dewPoint, float airPressureStation, float airPressureSeaLevel, float visibility, float windSpeed, float rain, float snow, int events, float cloudAmount, int windDirection) {
 		try {
 			pst.setInt(1, stationID);
 			pst.setTimestamp(2, timestamp);
-			if (temperature != null)
+			if (temperature != -10000)
 				pst.setFloat(3, temperature);
 			else
 				pst.setNull(3, Types.FLOAT);
-			if (dewPoint != null)
+			if (dewPoint != -10000)
 				pst.setFloat(4, dewPoint);
 			else
 				pst.setNull(4, Types.FLOAT);
-			if (airPressureStation != null)
+			if (airPressureStation != -10000)
 				pst.setFloat(5, airPressureStation);
 			else
 				pst.setNull(5, Types.FLOAT);
-			if (airPressureSeaLevel != null)
+			if (airPressureSeaLevel != -10000)
 				pst.setFloat(6, airPressureSeaLevel);
 			else
 				pst.setNull(6, Types.FLOAT);
-			if (rain != null)
+			if (rain != -10000)
 				pst.setFloat(7, rain);
 			else
 				pst.setNull(7, Types.FLOAT);
-			if (snow != null)
+			if (snow != -10000)
 				pst.setFloat(8, snow);
 			else
 				pst.setNull(8, Types.FLOAT);
-			if (cloudAmount != null)
+			if (cloudAmount != -10000)
 				pst.setFloat(9, cloudAmount);
 			else
 				pst.setNull(9, Types.FLOAT);
-			if (visibility != null)
+			if (visibility != -10000)
 				pst.setFloat(10, visibility);
 			else
 				pst.setNull(10, Types.FLOAT);
-			if (events != null)
+			if (events != -10000)
 				pst.setInt(11, events);
 			else
 				pst.setNull(11, Types.INTEGER);
-			if (windDirection != null)
+			if (windDirection != -10000)
 				pst.setInt(12, windDirection);
 			else
 				pst.setNull(12, Types.INTEGER);
-			if (windSpeed != null)
+			if (windSpeed != -10000)
 				pst.setFloat(13, windSpeed);
 			else
 				pst.setNull(13, Types.FLOAT);

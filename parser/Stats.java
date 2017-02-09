@@ -18,7 +18,7 @@ class Stats implements Runnable {
 	}
 
 	static synchronized void set_db_sent(int c) {
-		db_sent = c;
+		db_sent += c;
 	}
 
 	private static synchronized void res() {
@@ -37,7 +37,7 @@ class Stats implements Runnable {
 			System.out.println("Total threads: " + Integer.toString(java.lang.Thread.activeCount()));
 			System.out.println("Active pool threads: " + Integer.toString(((ThreadPoolExecutor)XMLParser.clientProcessingPool).getActiveCount()));
 			System.out.println("Parsing: " + Integer.toString(measurements) + "/s");
-			System.out.println("Last database insert rate: " + Integer.toString(db_sent) + " per 200 ms");
+			System.out.println("Database insert rate: " + Integer.toString(db_sent) + "/s");
 			res();
 		}
 	}

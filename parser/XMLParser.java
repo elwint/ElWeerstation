@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
@@ -10,6 +8,10 @@ import java.util.concurrent.*;
 public class XMLParser {
 	static final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
+	// 10 threads voor het parsen (thread pool)
+	// 4 threads voor het verzenden van data naar de database (elke 500 ms)
+	// 1 thread voor het accepteren van connecties
+	// 1 thread voor stats
 	public static void main(String[] args) {
 		int serverPort = 0;
 		String dbHost = null;
@@ -53,25 +55,34 @@ public class XMLParser {
 
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(serverPort);
+			serverSocket = new ServerSocket(serverPort, 800);
 			System.out.println("Started listening port on " + Integer.toString(serverPort));
 		} catch (IOException e) {
 			System.out.println("Could not listen on port " + Integer.toString(serverPort) + ", " + e);
 			System.exit(1);
 		}
 
-		//TODO: Meerdere database connecties? (if necessary)
-		DatabaseHandler db_handler = new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql);
-		new Thread(db_handler).start();
+		DatabaseHandler[] db_handlers = {
+				new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql),
+				new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql),
+				new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql),
+				new DatabaseHandler(dbHost, dbPort, dbName, dbUser, dbPass, sql)
+		};
+		new Thread(db_handlers[0]).start();
+		new Thread(db_handlers[1]).start();
+		new Thread(db_handlers[2]).start();
+		new Thread(db_handlers[3]).start();
 		new Thread(new Stats()).start();
 
+		int i = 0;
 		while (true) {
+			if (i > 3) i = 0;
 			try {
 				Socket clientSocket = serverSocket.accept();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				// System.out.println("CONNECTED: " + client.getInetAddress() + ":" + client.getPort());
 				Stats.inc_clients();
-				clientProcessingPool.submit(new DataHandler(clientSocket, reader, db_handler));
+				clientProcessingPool.submit(new DataHandler(clientSocket, db_handlers[i]));
+				i++;
 			} catch(IOException e) {
 				System.out.println("Client connection error" + ", " + e);
 			}
