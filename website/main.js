@@ -14,7 +14,7 @@ function updateCountryFilter() {
 			})
 		}
 	}
-	req.open("GET", "http://localhost:9090/countries", true);
+	req.open("GET", "http://145.33.225.152/countries", true);
 	req.send();
 }
 
@@ -42,7 +42,7 @@ function updateStationFilter() {
 		}
 	}
 	station = ""
-	req.open("GET", getURL("http://localhost:9090/stations"), true);
+	req.open("GET", getURL("http://145.33.225.152/stations"), true);
 	req.send();
 }
 
@@ -188,7 +188,7 @@ function updateWeekGraphs() {
 			});
 		}
 	}
-	req.open("GET", getURL("http://localhost:9090/weekly"), true);
+	req.open("GET", getURL("http://145.33.225.152/weekly"), true);
 	req.send();
 }
 
@@ -241,7 +241,7 @@ function updatePeakRain() {
 			});
 		}
 	}
-	peakRainReq.open("GET", getURL("http://localhost:9090/rain/top5"), true);
+	peakRainReq.open("GET", getURL("http://145.33.225.152/rain/top5"), true);
 	peakRainReq.send();
 }
 
@@ -314,7 +314,7 @@ windForceReq.onreadystatechange = function () {
 }
 
 function getWindForceData() {
-	windForceReq.open("GET", getURL("http://localhost:9090/windspeed/since?time="+Math.floor(lastTime/1000)), true);
+	windForceReq.open("GET", getURL("http://145.33.225.152/windspeed/since?time="+Math.floor(lastTime/1000)), true);
 	windForceReq.send();
 }
 
