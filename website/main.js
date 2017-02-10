@@ -301,7 +301,7 @@ function formatDate(d) {
 function updateWindForceGraph(elem) {
 	windForceData.splice(0,1);
 	windForceData.push(elem.value);
-	lastTime = elem.time*1000;
+	lastTime = (elem.time+1)*1000;
 	windForceChart.update();
 }
 
