@@ -1,16 +1,20 @@
 // filters
 
 var countryFilter = document.getElementById("country_filter")
-var country = "";
+var country = "EL SALVADOR";
 
 function updateCountryFilter() {
 	var req = new XMLHttpRequest();
 	req.onreadystatechange = function () {
 		if (req.readyState == 4) {
-			countryFilter.innerHTML = "<option value=\"\" selected>Country</option>";
+			countryFilter.innerHTML = "<option value=\"\">Country</option>";
 			var json = JSON.parse(req.responseText);
 			json.forEach(function(elem) {
-				countryFilter.innerHTML += "<option value=\""+elem+"\">"+elem+"</option>";
+				s = "";
+				if (elem == countr) {
+					s = " selected";
+				}
+				countryFilter.innerHTML += "<option value=\""+elem+"\""+s+">"+elem+"</option>";
 			})
 		}
 	}
