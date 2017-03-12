@@ -74,6 +74,7 @@ public class XMLParser {
 		new Thread(db_handlers[3]).start();
 		new Thread(new Stats()).start();
 
+		((ThreadPoolExecutor)clientProcessingPool).prestartAllCoreThreads();
 		int i = 0;
 		while (true) {
 			if (i > 3) i = 0;
