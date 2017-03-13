@@ -130,6 +130,55 @@ def rain_top5():
 
 	return json.dumps(result)
 
+@app.route('/rain/download')
+def rain_download():
+	country = request.args.get('country')
+	station = request.args.get('station')
+
+	if station != "" and station != None:
+		try:
+			station = int(station)
+		except:
+			abort(400)
+	else:
+		station = 0
+
+	v = ()
+
+	q = "SELECT to_char(Time, 'YYYY-MM-DD'), s.Country || ', ' || s.Name, max(m.Rain) FROM Measurement m INNER JOIN Stations s ON (s.stn = m.Station_ID) WHERE Time::date > current_date - interval '1 month'"
+
+	if station > 0:
+		q += " AND s.stn = %s"
+		v += (station,)
+	elif country != "" and country != None:
+		q += " AND s.Country = %s"
+		v += (country,)
+
+	q += " GROUP BY 1, 2, Time::date ORDER BY 1"
+
+	conn = pool.getconn()
+	cur = conn.cursor()
+	cur.execute(q, v)
+	rows = cur.fetchall()
+
+	result = []
+
+	m = None;
+	for row in rows:
+		if m != None and m["date"] != row[0]:
+			result.append(m)
+		if m == None or m["date"] != row[0]:
+			m = {"date":row[0], "value":-1}
+		if row[2] > m["value"]:
+			m["station"] = row[1]
+			m["value"] = row[2]
+	if len(rows) > 0:
+		result.append(m)
+
+	pool.putconn(conn)
+
+	return json.dumps(result)
+
 @app.route('/weekly')
 def get_weekly_data():
 	country = request.args.get('country')
