@@ -85,7 +85,9 @@ class DataHandler implements Runnable {
 				} else {
 					// System.out.println("[" + client.getInetAddress() + ":" + client.getPort() + "] Successfully received data for station: " + Integer.toString(stationID));
 					Stats.inc_measurements();
-					db_handler.prepareData(stationID, timestamp, temperature, dewPoint, airPressureStation, airPressureSeaLevel, visibility, windSpeed, rain, snow, events, cloudAmount, windDirection);
+					if (stationID == 786630 || stationID == 786660) {
+						db_handler.prepareData(stationID, timestamp, temperature, dewPoint, airPressureStation, airPressureSeaLevel, visibility, windSpeed, rain, snow, events, cloudAmount, windDirection);
+					}
 				}
 				read = false;
 
