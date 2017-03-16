@@ -1,35 +1,6 @@
 // filters
 
-var countryFilter = document.getElementById("country_filter")
 var country = "EL SALVADOR";
-
-function updateCountryFilter() {
-	var req = new XMLHttpRequest();
-	req.onreadystatechange = function () {
-		if (req.readyState == 4) {
-			countryFilter.innerHTML = "<option value=\"\">Country</option>";
-			var json = JSON.parse(req.responseText);
-			json.forEach(function(elem) {
-				s = "";
-				if (elem == countr) {
-					s = " selected";
-				}
-				countryFilter.innerHTML += "<option value=\""+elem+"\""+s+">"+elem+"</option>";
-			})
-		}
-	}
-	req.open("GET", "http://145.33.225.152/countries", true);
-	req.send();
-}
-
-function countryFilterChanged() {
-	country = countryFilter.value;
-	updateStationFilter();
-	resetAllGraphs();
-}
-countryFilter.onchange = countryFilterChanged;
-
-updateCountryFilter();
 
 var stationFilter = document.getElementById("station_filter")
 var station = "";
@@ -55,6 +26,8 @@ function stationFilterChanged() {
 	resetAllGraphs();
 }
 stationFilter.onchange = stationFilterChanged;
+
+updateStationFilter();
 
 function getURL(url) {
 	if (country == "") {
